@@ -1,0 +1,35 @@
+name: Deploy GitHub page
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies 🥚
+        run: |
+          sudo apt-get install texlive-latex-base \
+            texlive-extra-utils \
+            texlive-latex-extra \
+            texlive-fonts-extra \
+            texlive-fonts-recommended \
+            biber chktex latexmk
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: cv_8.tex
+          latexmk_shell_escape: true
+      - name: Move
+        run: |
+          mv cv_8.pdf public/cv.pdf
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: public
